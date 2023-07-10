@@ -1,4 +1,5 @@
 import fs from "fs/promises";
+import { nanoid } from "nanoid";
 import path from "path";
 const contactsPath = path.resolve("db", "contacts.json");
 const updateContactsStorage = (contacts) =>
@@ -10,15 +11,14 @@ export const listContacts = async () => {
 };
 export const getContactById = async (contactId) => {
   const contacts = await listContacts();
-  const result = contacts.find((contact) => contact.contactId === contactId);
+  const result = contacts.find((contact) => contact.id === contactId);
   return result || null;
 };
-export const addContact = async (name, email, phone) => {
+export const addContact = async (data) => {
   const contacts = await listContacts();
   const newContact = {
-    name,
-    email,
-    phone,
+    id: nanoid(),
+    ...data,
   };
   contacts.push(newContact);
   await updateContactsStorage(contacts);
@@ -26,7 +26,7 @@ export const addContact = async (name, email, phone) => {
 };
 export const removeContact = async (contactId) => {
   const contacts = await listContacts();
-  const index = contacts.findIndex((item) => item.contactId === contactId);
+  const index = contacts.findIndex((item) => item.id === contactId);
   if (index === -1) {
     return null;
   }
